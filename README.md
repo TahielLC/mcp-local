@@ -72,7 +72,7 @@ El flujo general de ejecución es el siguiente:
                              ▼
                   ┌──────────────────────┐
                   │     GOOGLE GEMINI    │
-                  │   gemini-2.5-flash   │
+                  │gemini-3.5-flash-lite │
                   └──────────┬───────────┘
                              │
                              ▼

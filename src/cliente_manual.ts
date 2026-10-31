@@ -1,6 +1,6 @@
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI, Type } from "@google/genai"; // Importamos el nuevo SDK
 
 async function main() {
   // 1. Conectar al servidor MCP contenerizado
@@ -48,15 +48,22 @@ async function main() {
     throw new Error("Falta la variable GEMINI_API_KEY en el archivo .env");
   }
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-  // Usamos el modelo flash estándar de la API
-  const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
+  const genAI = new GoogleGenAI({ apiKey });
 
-  const prompt = `Actúa como un asistente corporativo. Recibiste este JSON crudo desde nuestra base de datos PostgreSQL mediante el protocolo MCP: ${datosCrudos}. Escribe un mensaje breve y profesional dirigido al equipo de ventas indicando quiénes son nuestros clientes Premium actuales basándote únicamente en esos datos.`;
+  // Usamos el gestor de chats automático que administra los thought_signatures
+  const chat = genAI.chats.create({
+    model: "gemini-3.5-flash-lite",
+  });
 
-  const result = await model.generateContent(prompt);
+  const prompt = `Actúa como un asistente corporativo. Recibiste este JSON crudo desde nuestra base de datos PostgreSQL mediante el protocolo MCP:
+   ${datosCrudos}. 
+   Escribe un mensaje breve y profesional dirigido al equipo de ventas indicando quiénes son nuestros clientes
+    Premium actuales basándote únicamente en esos datos.`;
+  let result = await chat.sendMessage({ message: prompt });
+  //const result = await model.generateContent(prompt);
+
   console.log("\n================ RESPUESTA DE LA IA ================\n");
-  console.log(result.response.text());
+  console.log(result.text);
   console.log("\n====================================================");
 
   process.exit(0);
